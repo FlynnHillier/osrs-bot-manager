@@ -4,18 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:server":"cd src/server && ts-node index.ts",
+    "dev:server":"cd src/server && nodemon index.ts",
+    "dev:client":"cd src/client && npm run start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "server":"1.0.0"
-  },
-  "devDependencies": {
-    "server":"1.0.0"
-  },
   "workspaces":[
     "src/client/",
     "src/server/"
