@@ -1,24 +1,21 @@
 {
-  "name": "osrs-bot-manager",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:server":"cd src/server && ts-node index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "server":"1.0.0"
+    "dotenv": "^16.3.1",
+    "ws": "^8.14.2"
   },
   "devDependencies": {
-    "server":"1.0.0"
-  },
-  "workspaces":[
-    "src/client/",
-    "src/server/"
-  ],
-  "private":true
+    "@types/ws": "^8.5.6",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
 }
