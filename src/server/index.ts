@@ -1,4 +1,15 @@
-import { config } from "dotenv";
-config()
+import { initialiseEnvVariables } from "./init/init.config";
+import { initialiseMongoConnection } from "./init/mongoose.init";
+import { initialiseSocketServer } from "./init/socket.init";
 
-import "./sockets/router.socket"
+async function init() {
+    initialiseEnvVariables()
+    await initialiseMongoConnection(()=>{
+        console.log("connected to mongodb")
+    })
+
+    initialiseSocketServer(undefined)
+
+}
+
+init()
