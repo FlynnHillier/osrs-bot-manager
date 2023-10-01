@@ -1,67 +1,61 @@
-import { WebSocket } from "ws"
+import { Socket } from "socket.io";
 
-//This should map each unique osrs-client to a socket.
 export class SocketManager {
-    private sockets : Map<string,WebSocket> = new Map()
+    public socketMap: Map<string,{rooms:string[],sockets:Socket[]}> = new Map()
+    
+    constructor(){}
+    
+    join(username:string,room:string) : void {
+        const existingMapEntry = this.socketMap.get((username))
 
-    constructor() {}
+        this.socketMap.set(username, //update socket map entry
+            {
+                sockets:[],
+                ...existingMapEntry,
+                rooms:[
+                    room,
+                    ...(existingMapEntry?.rooms || [])
+                ]
+            })
 
-    /**
-     * 
-     * @param username - the username to which the socket should be bound to
-     * @param socket - a web socket instance associated to the passed username
-     * @description register a new client socket connection to a user, for identification later.
-     */
-    public register(username:string,socket:WebSocket) {
-        if(this.existsClient(username)){
-            this.deregister(username)
+        for(let socket of existingMapEntry?.sockets || []){ //update all socket connections to be within room
+            socket.join(room)
         }
-
-        this.sockets.set(username,socket)
     }
 
+    leave(username:string,room:string) : void {
+        const existingMapEntry = this.socketMap.get((username))
 
-    /**
-     * 
-     * @param username - the username to de-register
-     * @returns void
-     * @description deregister a client if it has been registered previously
-     */
-    public deregister(username:string) : void {
-        if (!this.sockets.has(username)){
-            return 
+        this.socketMap.set(username, //update socket map entry
+            {
+                sockets:[],
+                ...existingMapEntry,
+                rooms:existingMapEntry?.rooms.splice(existingMapEntry.rooms.indexOf(room),1) || []
+            })
+
+        for(let socket of existingMapEntry?.sockets || []){ //update all socket connections to leave room
+            socket.leave(room)
         }
-        
-        const existingSocket = this.sockets.get(username)
-        existingSocket!.close()
-        this.sockets.delete(username)
     }
 
-    /**
-     * 
-     * @param username - check if the specified username exists within client entries
-     * @returns boolean : 
-     */
-    public existsClient(username:string) : boolean {
-        return this.sockets.has(username)
-    }
 
-    public getSocket(username:string) : WebSocket {
-        if(!this.existsClient(username)){
-            //raise socket not exists error
+    registerConnection(username:string,socket:Socket) : void{
+        const existingMapEntry = this.socketMap.get((username))
+
+        this.socketMap.set(username,
+            {
+                rooms:[],
+                ...existingMapEntry,
+                sockets:[
+                    socket,
+                    ...(existingMapEntry?.sockets || [])
+                ]
+            })
+
+        for(let room of existingMapEntry?.rooms || []){
+            socket.join(room)
         }
-        
-        return this.sockets.get(username) as WebSocket
-    }
-
-    public get numberOfConnections() {
-        return this.sockets.size
-    }
-
-    public get ConnectionIdentifiers() {
-        return Array(this.sockets.keys())
     }
 }
 
-// instantiated instance for imports
 export const socketManager = new SocketManager()

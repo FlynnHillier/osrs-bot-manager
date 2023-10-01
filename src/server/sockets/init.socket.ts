@@ -1,3 +1,4 @@
-import { WebSocketServer } from "ws";
+import {Server} from "socket.io"
 
-export const wss = new WebSocketServer({ port: Number(process.env.PORT) || 8080 });
+export const wss = new Server()
+
