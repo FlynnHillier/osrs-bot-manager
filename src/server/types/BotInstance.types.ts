@@ -1,5 +1,12 @@
 import { ChildProcess } from "child_process"
-import { BotInstance } from "../types/BotClient.types"
+
+export interface BotInstance {
+    user:{
+        username:string,
+        password:string,
+        proxy:string,
+    }
+}
 
 export interface BotInstanceLocalised extends BotInstance{
     client:{

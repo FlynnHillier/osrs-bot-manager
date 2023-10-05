@@ -1,14 +1,13 @@
-import {Schema} from "mongoose"
-import {BotInstance} from "../types/BotClient.types"
+import {Model, Schema,model} from "mongoose"
+import {BotInstance} from "../types/BotInstance.types"
 
-
-const BotInstanceModel = new Schema<BotInstance>({
+const BotInstanceSchema = new Schema<BotInstance>({
     user:{
         username:{
             required:true,
             type:String,
             validate:{
-                validator:(email) => {
+                validator:(email:string) => {
                     return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
                 },
                 message:"invalid email."
@@ -22,7 +21,7 @@ const BotInstanceModel = new Schema<BotInstance>({
             required:true,
             type:String,
             validate:{
-                validator:(proxyString) => {
+                validator:(proxyString:string) => {
                     return /^([A-Za-z]+\.?)+:[0-9]+:[a-zA-Z0-9]+:[a-zA-Z0-9]+$/.test(proxyString)
                 },
                 message:"invalid proxy string."
@@ -31,3 +30,4 @@ const BotInstanceModel = new Schema<BotInstance>({
     }
 })
 
+export const BotInstanceModel = model("BotInstance",BotInstanceSchema)
