@@ -1,4 +1,4 @@
-import { initialiseEnvVariables } from "./init/init.config";
+import { initialiseEnvVariables } from "./init/config.init";
 import { initialiseMongoConnection } from "./init/mongoose.init";
 import { initialiseSocketServer } from "./init/socket.init";
 
