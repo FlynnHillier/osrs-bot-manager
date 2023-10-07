@@ -1,17 +1,4 @@
-import { ChildProcess } from "child_process"
+import {BotInstance} from "../classes/BotInstance.class"
+import { ExcludeMethods } from "./util.types"
 
-export interface BotInstance {
-    user:{
-        username:string,
-        password:string,
-        proxy:string,
-    }
-}
-
-export interface BotInstanceLocalised extends BotInstance{
-    client:{
-        isStarted:boolean
-        isConnectedSocket:boolean
-        proccess:ChildProcess | null
-    }
-}
+export type BotInstanceSnapshot = ExcludeMethods<Omit<BotInstance,"client">>

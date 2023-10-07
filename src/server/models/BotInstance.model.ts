@@ -1,7 +1,7 @@
 import {Model, Schema,model} from "mongoose"
-import {BotInstance} from "../types/BotInstance.types"
+import {BotInstanceSnapshot} from "../types/BotInstance.types"
 
-const BotInstanceSchema = new Schema<BotInstance>({
+const BotInstanceSnapshotSchema = new Schema<BotInstanceSnapshot>({
     user:{
         username:{
             required:true,
@@ -30,4 +30,4 @@ const BotInstanceSchema = new Schema<BotInstance>({
     }
 })
 
-export const BotInstanceModel = model("BotInstance",BotInstanceSchema)
+export const BotInstanceSnapshotModel = model("BotInstance",BotInstanceSnapshotSchema)
