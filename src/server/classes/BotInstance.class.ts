@@ -1,5 +1,5 @@
 import { exec,ChildProcess,spawn } from "child_process"
-import { BotInstanceSnapshotModel } from "../models/BotInstance.model"
+import { BotInstanceSnapshotModel } from "../models/BotInstanceSnapshot.model"
 import { BotInstanceSnapshot } from "../types/BotInstance.types"
 
 export class BotInstance {

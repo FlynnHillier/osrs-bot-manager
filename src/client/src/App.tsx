@@ -1,6 +1,5 @@
 import React from 'react';
 import InstanceFrame from './components/InstanceFrame';
-import CheckBox from './components/CheckBox';
 
 function App() {
   return (
