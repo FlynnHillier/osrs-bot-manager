@@ -1,7 +1,7 @@
 import { exec,ChildProcess } from "child_process"
 import mongoose from "mongoose"
 import { BotInstance } from "./BotInstance.class"
-import { BotInstanceSnapshotModel } from "../models/BotInstance.model"
+import { BotInstanceSnapshotModel } from "../models/BotInstanceSnapshot.model"
 
 export class BotInstanceMaster {
     private instances : Map<string,BotInstance> = new Map<string,BotInstance>()
