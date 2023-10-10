@@ -12,6 +12,7 @@ export async function init() {
     await initialiseBotInstanceMaster()
     initialiseSocketServer(undefined)
     botInstanceMaster.startAll()
+    console.log("initialised.")
 }
 
 init()
