@@ -1,17 +1,13 @@
 import {createContext,ReactNode, useReducer} from "react"
-import { InstanceState } from "../types/instances.types"
-
-type MultiInstancesState = {
-    [key:string]:InstanceState
-}
+import { InstanceState } from "@common/types/instanceState.types"
+import { Subset } from "@common/types/util.types";
 
 export interface InstanceReducerActionPayload {
-    targetUser?:string
-    instanceState:Partial<InstanceState>
+    instanceState?:Subset<InstanceState>
 }
 
 
-export type InstanceReducerActionType = "UPDATE" | "NEW" | "DELETE"
+export type InstanceReducerActionType = "NEW" | "KILLED" | "BOOTED"
 
 
 export interface InstanceReducerAction {
@@ -19,16 +15,41 @@ export interface InstanceReducerAction {
     payload:InstanceReducerActionPayload
 }
 
-function instancesReducer(instances:MultiInstancesState,action:InstanceReducerAction) : MultiInstancesState{
-    switch (action.type){
+function instancesReducer(instances:InstanceState[],action:InstanceReducerAction) : InstanceState[]{    
+    const {type,payload} = action
+
+    let targetInstanceIndex = payload.instanceState?.user?.username ? instances.map(instance => instance.user.username).indexOf(payload.instanceState?.user?.username) : -1
+    let targetInstance = targetInstanceIndex !== -1 ? instances[targetInstanceIndex] : null
+
+    switch (type){
+        case "NEW":
+            if(targetInstance) {
+                //remove already existing version of client.
+                instances.splice(targetInstanceIndex,1)
+            }
+            instances.push(action.payload.instanceState as InstanceState) //ADD VALIDATION FOR VALID INSTANCESTATE HERE IN FUTURE.
+            break;
+        case "KILLED":    
+            if(targetInstance){
+                targetInstance.client.isBooted = false
+            }
+            break;
+        case "BOOTED":
+            if(targetInstance){
+                targetInstance.client.isBooted = true
+            }
+            break;
         default:
-            return {...instances}
+            break;
     }
+
+    //force state update by deepcopy
+    return [...instances]
 }
 
 
 const useProvideInstances = () => {
-    const [instances,dispatchInstances] = useReducer(instancesReducer,{} as MultiInstancesState)
+    const [instances,dispatchInstances] = useReducer(instancesReducer,[] as InstanceState[])
 
     return {
         instances,

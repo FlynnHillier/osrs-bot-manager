@@ -4,6 +4,7 @@ export interface InstanceState {
         proxy:string | null
     }
     client:{
-        isActive:boolean
+        isBooted:boolean
+        isSocketConnected:boolean
     }
 }

@@ -1,23 +1,30 @@
-import React from 'react'
+import React,{useState} from 'react'
 import CheckBox from './CheckBox'
+import { useSocket } from '../hooks/contexts/useSocket.hook'
+import { InstanceState } from '@common/types/instanceState.types'
 
 import "../styles/instanceFrame.css"
 
-interface Props {
-    user:{
-      username:string
-      proxy:string | null
-    }
-    client:{
-      isActive:boolean
-    }
-}
+interface Props extends InstanceState {}
 
 const InstanceFrame = ({user,client}:Props) => {
+  let [isMultiSelected,setIsMultiSelected] = useState<boolean>(false)
+  const socket = useSocket()
+
+
+  const bootInstance = () => {
+    if(!client.isBooted){
+      socket.emit("BOOT",user.username)
+    }
+  }
+
+
+
+
   return (
     <div className='instanceFrame pcontainer'>
       <CheckBox
-        onActiveStateChange={(active)=>{}}
+        onActiveStateChange={setIsMultiSelected}
       />
       <div className="datagrid">
         <div className="user">
@@ -31,7 +38,9 @@ const InstanceFrame = ({user,client}:Props) => {
             {"fishing: casting rod"}
           </span>
         </div>
-
+        <button disabled={client.isBooted} onClick={bootInstance}>
+          start client
+        </button>
       </div>
     </div>
   )

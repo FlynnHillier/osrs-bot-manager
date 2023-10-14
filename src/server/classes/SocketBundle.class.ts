@@ -55,4 +55,11 @@ export class SocketBundle {
 
         this.sockets.splice(socketIndex,1)
     }
+
+    public emitToAll(ev:string,...args:any[]) : number {
+        for(let socket of this.sockets){
+            socket.emit(ev,...args)
+        }
+        return this.sockets.length
+    }
 }
