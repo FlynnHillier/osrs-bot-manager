@@ -12,6 +12,7 @@ function App() {
         Object.values(instances).map((instance)=>{
           return (
             <InstanceFrame
+              key={instance.user.username}
               user={{
                 username:instance.user.username,
                 proxy:instance.user.proxy,

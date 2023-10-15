@@ -21,7 +21,6 @@ const SocketInstanceEvents = ({children}:Props) => {
         }
 
         function onBooted(username:string){
-            console.log("booted")
             dispatchInstances({
                 type:"BOOTED",
                 payload:{

@@ -1,6 +1,7 @@
 import {createContext,ReactNode, useReducer} from "react"
 import { InstanceState } from "@common/types/instanceState.types"
 import { Subset } from "@common/types/util.types";
+import { isInstanceState } from "../logic/instance.logic";
 
 export interface InstanceReducerActionPayload {
     instanceState?:Subset<InstanceState>
@@ -23,11 +24,17 @@ function instancesReducer(instances:InstanceState[],action:InstanceReducerAction
 
     switch (type){
         case "NEW":
+            if(!action.payload.instanceState || !isInstanceState(action.payload.instanceState)){
+                //invalid payload
+                break;
+            }
+
             if(targetInstance) {
                 //remove already existing version of client.
                 instances.splice(targetInstanceIndex,1)
             }
-            instances.push(action.payload.instanceState as InstanceState) //ADD VALIDATION FOR VALID INSTANCESTATE HERE IN FUTURE.
+            
+            instances.push(action.payload.instanceState as InstanceState)
             break;
         case "KILLED":    
             if(targetInstance){

@@ -2,14 +2,14 @@ import { InstanceState } from "@common/types/instanceState.types";
 import { socket } from '../contexts/socket.context';
 import { instanceStateSchema } from "../schemas/InstanceState.schema";
 
-
-
-
 export class Instance implements InstanceState {
-    constructor(
-        public client : { isBooted: boolean; isSocketConnected: boolean; },
-        public user : { username: string; proxy: string | null; }
-    ){}
+    public client: { isBooted: boolean; isSocketConnected: boolean; };
+    public user: { username: string; proxy: string | null; };
+    
+    constructor(state:InstanceState){
+        this.client = state.client
+        this.user = state.user
+    }
 
     public boot() {
         if(!this.client.isBooted){
@@ -18,7 +18,6 @@ export class Instance implements InstanceState {
     }
 
     static isValidInstanceState(instanceState:Record<string,any>) : boolean {
-        //use joi schema to validate.
         const result = instanceStateSchema.validate(instanceState)
         if(result.error){
             return false

@@ -2,21 +2,15 @@ import React,{useState} from 'react'
 import CheckBox from './CheckBox'
 import { useSocket } from '../hooks/contexts/useSocket.hook'
 import { InstanceState } from '@common/types/instanceState.types'
+import { useInstanceLogic } from '../hooks/contexts/useInstanceLogic'
 
 import "../styles/instanceFrame.css"
 
-interface Props extends InstanceState {}
 
-const InstanceFrame = ({user,client}:Props) => {
+const InstanceFrame = (instanceState:InstanceState) => {
   let [isMultiSelected,setIsMultiSelected] = useState<boolean>(false)
-  const socket = useSocket()
-
-
-  const bootInstance = () => {
-    if(!client.isBooted){
-      socket.emit("BOOT",user.username)
-    }
-  }
+  const {bootInstance} = useInstanceLogic()
+  const {user,client} = instanceState
 
 
 
@@ -38,7 +32,9 @@ const InstanceFrame = ({user,client}:Props) => {
             {"fishing: casting rod"}
           </span>
         </div>
-        <button disabled={client.isBooted} onClick={bootInstance}>
+        <button disabled={client.isBooted} onClick={()=>{
+          bootInstance(instanceState)
+        }}>
           start client
         </button>
       </div>
