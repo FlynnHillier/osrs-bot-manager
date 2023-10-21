@@ -6,7 +6,7 @@ import { botInstanceMaster } from "../init/botInstanceMaster.init";
 
 function router(socket:Socket) {
     socket.on("BOOT",(username:string)=>{
-        botInstanceMaster.startInstance(username)
+        // botInstanceMaster.startInstance(username)
     })
 }
 

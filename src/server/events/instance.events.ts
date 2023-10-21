@@ -1,15 +1,15 @@
 import { BotInstance, BotInstanceEvents } from "../classes/BotInstance.class";
 import { clientSocketBundle } from "../sockets/managers.socket";
 import { Subset } from "@common/types/util.types";
+import { BotInstanceMaster } from "../classes/BotInstanceMaster.class";
+import { CallbackCollection } from "../util/CallbackCollection.util";
 
-export const instanceEvents : Subset<BotInstanceEvents> = {
+export const instanceEvents : BotInstanceMaster["events"] = {
     client:{
-        onIsActiveChange:(instance:BotInstance,active:boolean)=>{
-            if(active){
-                clientSocketBundle.emitToAll("BOOTED",instance.user.username)
-            } else if(!active){
-                clientSocketBundle.emitToAll("KILLED",instance.user.username)
+        onClose:new CallbackCollection(
+            (i:BotInstance)=>{
+                console.log(i.user.username, " closed")
             }
-        }
+        )
     }
 }
