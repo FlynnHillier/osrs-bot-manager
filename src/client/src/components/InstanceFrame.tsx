@@ -32,7 +32,7 @@ const InstanceFrame = (instanceState:InstanceState) => {
             {"fishing: casting rod"}
           </span>
         </div>
-        <button disabled={client.isBooted} onClick={()=>{
+        <button disabled={client.isActive} onClick={()=>{
           bootInstance(instanceState)
         }}>
           start client

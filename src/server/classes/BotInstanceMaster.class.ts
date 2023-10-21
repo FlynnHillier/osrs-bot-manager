@@ -18,6 +18,17 @@ export class BotInstanceMaster {
         }
     }
 
+    public boot(username:string) : boolean{
+        const instance = this.getInstance(username)
+        
+        if(!instance){
+            return false
+        }
+
+        this.queue.enqueue(instance)
+        return true
+    }
+
 
     constructor(
         events:BotInstanceMaster["events"]

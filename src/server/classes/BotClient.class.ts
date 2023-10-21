@@ -82,7 +82,11 @@ export class BotClient {
 
     get state() : InstanceState["client"]{
         return {
-            isBooted:this.isActive,
+            isActive:this.isActive,
+            queue:{
+                isQueued:this.queue.isQueued,
+                position:this.queue.position,
+            },
             isSocketConnected:this.isSocketConnected
         }
     }

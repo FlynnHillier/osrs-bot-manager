@@ -4,7 +4,11 @@ export interface InstanceState {
         proxy:string | null
     }
     client:{
-        isBooted:boolean
+        queue:{
+            isQueued:boolean,
+            position:number
+        }
+        isActive:boolean
         isSocketConnected:boolean
     }
 }

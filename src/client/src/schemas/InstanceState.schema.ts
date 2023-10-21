@@ -7,7 +7,11 @@ export const instanceStateSchema = Joi.object({
         proxy:Joi.string().allow(null).required(),
     }).required(),
     client:Joi.object({
-        isBooted:Joi.boolean().required(),
+        isActive:Joi.boolean().required(),
         isSocketConnected:Joi.boolean().required(),
+        queue:Joi.object({
+            isQueued:Joi.boolean().required(),
+            position:Joi.number().required(),
+        })
     }).required()
 })

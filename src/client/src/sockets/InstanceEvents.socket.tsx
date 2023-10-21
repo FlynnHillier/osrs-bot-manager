@@ -20,40 +20,42 @@ const SocketInstanceEvents = ({children}:Props) => {
             })
         }
 
-        function onBooted(username:string){
+        function onStarted(instanceState:InstanceState){
             dispatchInstances({
-                type:"BOOTED",
+                type:"CLIENT",
                 payload:{
+                    subType:"STARTED",
                     instanceState:{
                         user:{
-                            username:username
-                        }
-                    }
+                            username:instanceState.user.username
+                        },
+                    },
                 }
             })
         }
 
-        function onKilled(username:string){
+        function onClosed(instanceState:InstanceState){
             dispatchInstances({
-                type:"KILLED",
+                type:"CLIENT",
                 payload:{
+                    subType:"CLOSED",
                     instanceState:{
                         user:{
-                            username:username,
+                            username:instanceState.user.username,
                         }
-                    }
+                    },
                 }
             })
         }
         
         socket.on("NEW",onNew)
-        socket.on("BOOTED",onBooted)
-        socket.on("KILLED",onKilled)
+        socket.on("CLIENT:STARTED",onStarted)
+        socket.on("CLIENT:CLOSED",onClosed)
 
         return () => {
             socket.off("NEW",onNew)
-            socket.off("BOOTED",onBooted)
-            socket.off("KILLED",onKilled)
+            socket.off("CLIENT:STARTED",onStarted)
+            socket.off("CLIENT:CLOSED",onClosed)
         }
     },[socket])
   

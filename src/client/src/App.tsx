@@ -18,8 +18,12 @@ function App() {
                 proxy:instance.user.proxy,
               }}
               client={{
+                queue:{
+                  isQueued:instance.client.queue.isQueued,
+                  position:instance.client.queue.position,
+                },
                 isSocketConnected:instance.client.isSocketConnected,
-                isBooted:instance.client.isBooted,
+                isActive:instance.client.isActive,
               }}
             />
           )

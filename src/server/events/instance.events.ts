@@ -8,8 +8,13 @@ export const instanceEvents : BotInstanceMaster["events"] = {
     client:{
         onClose:new CallbackCollection(
             (i:BotInstance)=>{
-                console.log(i.user.username, " closed")
+                clientSocketBundle.emitToAll("CLIENT:CLOSED",i)
             }
-        )
+        ),
+        onStart:new CallbackCollection(
+            (i:BotInstance)=>{
+                clientSocketBundle.emitToAll("CLIENT:STARTED",i)
+            }
+        ),
     }
 }

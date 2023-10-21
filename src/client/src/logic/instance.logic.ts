@@ -7,8 +7,8 @@ export function isInstanceState(state:any) {
 }
 
 export function bootInstance(instance:InstanceState) {
-    if(!instance.client.isBooted){
-        socket.emit("BOOT",instance.user.username)
+    if(!instance.client.isActive){
+        socket.emit("CLIENT:START",instance.user.username)
     }
 }
 

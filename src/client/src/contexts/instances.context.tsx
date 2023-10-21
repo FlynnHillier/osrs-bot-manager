@@ -3,20 +3,41 @@ import { InstanceState } from "@common/types/instanceState.types"
 import { Subset } from "@common/types/util.types";
 import { isInstanceState } from "../logic/instance.logic";
 
-export interface InstanceReducerActionPayload {
-    instanceState?:Subset<InstanceState>
+interface Action<Type extends string,SubType extends String | undefined = undefined> {
+    type:Type
+    payload:{
+        instanceState?:Subset<InstanceState>
+        subType?:SubType
+    }
 }
 
 
-export type InstanceReducerActionType = "NEW" | "KILLED" | "BOOTED"
+type ExtractSubType<T> = T extends Action<any, infer SubType> ? SubType : never;
 
+type SubAction<A extends Action<any,any>> = Action<ExtractSubType<A>>
 
-export interface InstanceReducerAction {
-    type:InstanceReducerActionType
-    payload:InstanceReducerActionPayload
+function getSubAction<A extends Action<any,any>>(action:A) : SubAction<A> {
+    if(!action.payload.subType){
+        throw "cannot create sub-action if no sub-type within passed action."
+    }
+    
+    return {
+        type:action.payload.subType,
+        payload:{
+            instanceState:action.payload.instanceState
+        }
+    }
 }
 
-function instancesReducer(instances:InstanceState[],action:InstanceReducerAction) : InstanceState[]{    
+
+type ClientAction = Action<"CLIENT","STARTED" | "CLOSED">
+
+
+
+type Actions = Action<"NEW"> | ClientAction
+
+
+function instancesReducer<T extends Actions>(instances:InstanceState[],action:T) : InstanceState[]{    
     const {type,payload} = action
 
     let targetInstanceIndex = payload.instanceState?.user?.username ? instances.map(instance => instance.user.username).indexOf(payload.instanceState?.user?.username) : -1
@@ -25,7 +46,7 @@ function instancesReducer(instances:InstanceState[],action:InstanceReducerAction
     switch (type){
         case "NEW":
             if(!action.payload.instanceState || !isInstanceState(action.payload.instanceState)){
-                //invalid payload
+                console.error("recieved malformed instance-context reducer event.")
                 break;
             }
 
@@ -33,18 +54,15 @@ function instancesReducer(instances:InstanceState[],action:InstanceReducerAction
                 //remove already existing version of client.
                 instances.splice(targetInstanceIndex,1)
             }
-            
+
             instances.push(action.payload.instanceState as InstanceState)
             break;
-        case "KILLED":    
-            if(targetInstance){
-                targetInstance.client.isBooted = false
+        case "CLIENT":  
+            if(!targetInstance || !payload.subType){
+                console.error("recieved malformed client-context reducer event.")
+                break
             }
-            break;
-        case "BOOTED":
-            if(targetInstance){
-                targetInstance.client.isBooted = true
-            }
+            targetInstance.client = clientReducer(targetInstance.client,getSubAction(action as ClientAction))
             break;
         default:
             break;
@@ -53,6 +71,25 @@ function instancesReducer(instances:InstanceState[],action:InstanceReducerAction
     //force state update by deepcopy
     return [...instances]
 }
+
+function clientReducer(client:InstanceState["client"],action:SubAction<ClientAction>) : InstanceState["client"] {
+    const {type,payload} = action
+
+    switch(type){
+        case "STARTED":
+            client.isActive = true
+            break;
+        case "CLOSED":
+            client.isActive = false
+            break;
+        default:
+            break;
+    }
+
+    return {...client}
+}
+
+
 
 
 const useProvideInstances = () => {
