@@ -1,19 +1,16 @@
-import React,{useState} from 'react'
-import CheckBox from './CheckBox'
-import { useSocket } from '../hooks/contexts/useSocket.hook'
+import {useState} from 'react'
 import { InstanceState } from '@common/types/instanceState.types'
 import { useInstanceLogic } from '../hooks/contexts/useInstanceLogic'
+
+import ClientStatusIcon from './ClientStatusIcon'
+import CheckBox from './CheckBox'
 
 import "../styles/instanceFrame.css"
 
 
 const InstanceFrame = (instanceState:InstanceState) => {
   let [isMultiSelected,setIsMultiSelected] = useState<boolean>(false)
-  const {bootInstance} = useInstanceLogic()
   const {user,client} = instanceState
-
-
-
 
   return (
     <div className='instanceFrame pcontainer'>
@@ -25,18 +22,15 @@ const InstanceFrame = (instanceState:InstanceState) => {
           <span className='username'>
             {user.username}
           </span>
-          <div className="onlineStatus"/>
+          <div className="status">
+            <ClientStatusIcon instance={instanceState}/>
+          </div>
         </div> 
         <div className="task">
           <span className="taskdescription">
             {"fishing: casting rod"}
           </span>
         </div>
-        <button disabled={client.isActive} onClick={()=>{
-          bootInstance(instanceState)
-        }}>
-          start client
-        </button>
       </div>
     </div>
   )

@@ -1,0 +1,33 @@
+.clientStatusIcon {
+    height: max(100%,18px);
+    aspect-ratio: 1/1;
+    display: flex;
+}
+
+.clientStatusIcon .icon.launched {
+    background-color: orange;
+    border-radius: 100%;
+    border: 1px solid black;
+    height: 90%;
+    aspect-ratio: 1/1;
+}
+
+.clientStatusIcon .icon.launched.connected {
+    background-color: green;
+}
+
+.clientStatusIcon .icon.idle {
+    content: "idle";
+    color: black;
+}
+
+.clientStatusIcon .icon.idle:hover {
+    cursor: pointer;
+}
+
+
+.clientStatusIcon .icon.queued {
+    width: 10px;
+    justify-content: left;
+    color: blue;
+}
