@@ -15,7 +15,7 @@ const SocketInstanceEvents = ({children}:Props) => {
             dispatchInstances({
                 type:"NEW",
                 payload:{
-                    instanceState:instanceState
+                    instanceState
                 }
             })
         }
@@ -25,11 +25,27 @@ const SocketInstanceEvents = ({children}:Props) => {
                 type:"CLIENT",
                 payload:{
                     subType:"STARTED",
-                    instanceState:{
-                        user:{
-                            username:instanceState.user.username
-                        },
-                    },
+                    instanceState
+                }
+            })
+        }
+
+        function onQueued(instanceState:InstanceState){
+            dispatchInstances({
+                type:"CLIENT",
+                payload:{
+                    subType:"QUEUED",
+                    instanceState
+                }
+            })
+        }
+
+        function onDequeued(instanceState:InstanceState){
+            dispatchInstances({
+                type:"CLIENT",
+                payload:{
+                    subType:"DEQUEUED",
+                    instanceState
                 }
             })
         }
@@ -39,23 +55,25 @@ const SocketInstanceEvents = ({children}:Props) => {
                 type:"CLIENT",
                 payload:{
                     subType:"CLOSED",
-                    instanceState:{
-                        user:{
-                            username:instanceState.user.username,
-                        }
-                    },
+                    instanceState
                 }
             })
         }
+
+
         
         socket.on("NEW",onNew)
         socket.on("CLIENT:STARTED",onStarted)
+        socket.on("CLIENT:QUEUED",onQueued)
         socket.on("CLIENT:CLOSED",onClosed)
+        socket.on("CLIENT:DEQUEUED",onDequeued)
 
         return () => {
             socket.off("NEW",onNew)
+            socket.off("CLIENT:QUEUED",onQueued)
             socket.off("CLIENT:STARTED",onStarted)
             socket.off("CLIENT:CLOSED",onClosed)
+            socket.off("CLIENT:DEQUEUED",onDequeued)
         }
     },[socket])
   

@@ -6,7 +6,7 @@ import { isInstanceState } from "../logic/instance.logic";
 interface Action<Type extends string,SubType extends String | undefined = undefined> {
     type:Type
     payload:{
-        instanceState?:Subset<InstanceState>
+        instanceState:InstanceState
         subType?:SubType
     }
 }
@@ -30,8 +30,7 @@ function getSubAction<A extends Action<any,any>>(action:A) : SubAction<A> {
 }
 
 
-type ClientAction = Action<"CLIENT","STARTED" | "CLOSED">
-
+type ClientAction = Action<"CLIENT","STARTED" | "CLOSED" | "QUEUED" | "DEQUEUED">
 
 
 type Actions = Action<"NEW"> | ClientAction
@@ -40,29 +39,40 @@ type Actions = Action<"NEW"> | ClientAction
 function instancesReducer<T extends Actions>(instances:InstanceState[],action:T) : InstanceState[]{    
     const {type,payload} = action
 
-    let targetInstanceIndex = payload.instanceState?.user?.username ? instances.map(instance => instance.user.username).indexOf(payload.instanceState?.user?.username) : -1
-    let targetInstance = targetInstanceIndex !== -1 ? instances[targetInstanceIndex] : null
+    //validate payload
+    if(!isInstanceState(payload.instanceState)){
+        console.error(`ignoring event ${type}${payload.subType ? `:${payload.subType}`:""} . Malformed instance-state in payload: `,payload.instanceState)
+        return instances
+    }
 
+    const existingInstanceIndex = instances.map(instance => instance.user.username).indexOf(payload.instanceState.user.username)
+    let existingInstance = instances[existingInstanceIndex] || null
+
+    //-- events that DO NOT require existing instance state --
+    let requireExistingInstanceState = false
     switch (type){
         case "NEW":
-            if(!action.payload.instanceState || !isInstanceState(action.payload.instanceState)){
-                console.error("recieved malformed instance-context reducer event.")
-                break;
-            }
-
-            if(targetInstance) {
+            if(existingInstance) {
                 //remove already existing version of client.
-                instances.splice(targetInstanceIndex,1)
+                instances.splice(existingInstanceIndex,1)
             }
 
             instances.push(action.payload.instanceState as InstanceState)
             break;
+        default:
+            requireExistingInstanceState = true
+            break;
+    }
+
+
+    if(requireExistingInstanceState && !existingInstance){
+        console.error(`ignoring event ${type}${payload.subType ? `:${payload.subType}`:""} . Expected existing instance-state in context, instance-state not found. event payload intance-state:`,payload.instanceState)
+    }
+
+    //-- events that DO require existing instance state --
+    switch (type){
         case "CLIENT":  
-            if(!targetInstance || !payload.subType){
-                console.error("recieved malformed client-context reducer event.")
-                break
-            }
-            targetInstance.client = clientReducer(targetInstance.client,getSubAction(action as ClientAction))
+            existingInstance.client = clientReducer(existingInstance.client,getSubAction(action as ClientAction))
             break;
         default:
             break;
@@ -81,6 +91,14 @@ function clientReducer(client:InstanceState["client"],action:SubAction<ClientAct
             break;
         case "CLOSED":
             client.isActive = false
+            break;
+        case "QUEUED":
+            client.queue.isQueued = true
+            client.queue.position = payload.instanceState.client.queue.position
+            break;
+        case "DEQUEUED":
+            client.queue.isQueued = false
+            client.queue.position = -1
             break;
         default:
             break;
