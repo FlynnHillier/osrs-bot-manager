@@ -1,19 +1,44 @@
-import { exec,ChildProcess } from "child_process"
-import mongoose from "mongoose"
 import { BotInstance } from "./BotInstance.class"
-import { BotInstanceSnapshotModel } from "../models/BotInstance.model"
+import { BotInstanceSnapshotModel } from "../models/BotInstanceSnapshot.model"
+import { InstanceBootQueue } from "./Queue.class"
+
 
 export class BotInstanceMaster {
     private instances : Map<string,BotInstance> = new Map<string,BotInstance>()
-    private deviousClientJarPath : string
+    private events : ConstructorParameters<typeof BotInstance>[1]
 
-    constructor(
-        deviousClientJarPath : string,
-    ) {
-        //validate path is valid path here
-        this.deviousClientJarPath = deviousClientJarPath
+    private queue : InstanceBootQueue = new InstanceBootQueue()
+
+
+    public bootAll(excludeUsernames:string[] = []){
+        for(let [username,instance] of this.instances.entries()){
+            if(!excludeUsernames.includes(username)){
+                this.queue.enqueue(instance)
+            }
+        }
     }
 
+    public boot(username:string) : boolean{
+        const instance = this.getInstance(username)
+        
+        if(!instance){
+            return false
+        }
+
+        this.queue.enqueue(instance)
+        return true
+    }
+
+
+    constructor(
+        events:BotInstanceMaster["events"]
+    ) {
+        this.events = events
+    }
+
+    
+    
+    
     async loadFromMongo(overwrite:boolean = false) : Promise<BotInstance[]> {
         const instanceSnapshots = await BotInstanceSnapshotModel.find()
 
@@ -21,7 +46,10 @@ export class BotInstanceMaster {
 
         for (let instanceSnapshot of instanceSnapshots){
             if(overwrite || (!overwrite  && this.getInstance(instanceSnapshot.user.username) == null)){
-                const instance = BotInstance.fromInstanceSnapshot(instanceSnapshot)
+                const instance = BotInstance.fromInstanceSnapshot(
+                    instanceSnapshot,
+                    this.events
+                )
                 this.instances.set(instanceSnapshot.user.username,instance)
                 newInstances.push(instance)
             }
@@ -30,15 +58,11 @@ export class BotInstanceMaster {
         return newInstances
     }
 
-    public startAll(excludeUsernames:string[] = []) {
-        for(let [username,instance] of this.instances.entries()){
-            if(!excludeUsernames.includes(username)){
-                instance.start(this.deviousClientJarPath)
-            }
-        }
+    private getInstance(username:string) : BotInstance | null {
+        return this.instances.get(username) || null
     }
 
-    getInstance(username:string) : BotInstance | null {
-        return this.instances.get(username) || null
+    public getAllInstances() : BotInstance[] {
+        return Array.from(this.instances.values())
     }
 }

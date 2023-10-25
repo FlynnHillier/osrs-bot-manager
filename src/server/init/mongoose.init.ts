@@ -26,9 +26,7 @@ export async function initialiseMongoConnection(onConnection:()=>void = ()=>{}) 
     mongoose.connection.on("connection",onConnection)
 
     try {
-        console.log("connecting.")
         await mongoose.connect(process.env.MONGO_ACCESS_URI as string)
-        console.log("connected.")
     } catch(err){
         console.log("error")
         throw {

@@ -9,6 +9,7 @@ export function initialiseEnvVariables() : void {
         "PORT",
         "MONGO_ACCESS_URI",
         "NODE_ENV",
+        "CLIENT_URL"
     ]
 
     const undefinedKeys : string[] = []
