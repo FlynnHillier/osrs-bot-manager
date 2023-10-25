@@ -1,4 +1,4 @@
-import React from "react"
+import React,{useEffect} from "react"
 import { InstanceState } from "@common/types/instanceState.types";
 import { TailSpin } from "react-loader-spinner";
 import {FaPlay} from "react-icons/fa"
@@ -7,17 +7,38 @@ import { bootInstance } from "../logic/instance.logic";
 import {ClipLoader} from "react-spinners"
 
 interface Props {
-    instance:InstanceState
+    instances:InstanceState[]
 }
 
-function ClientStatusIcon({instance}:Props) {
+function ClientStatusIcon({instances}:Props) {
+    function someInstancesIdle() : boolean {
+        return instances.some((instance)=>{return (!instance.client.queue.isQueued && !instance.client.isActive)})
+    }
+
+    function someInstancesActive() : boolean{
+        return instances.some((instance)=>{return instance.client.isActive})
+    }
+
+    function someInstancesQueued() : boolean{
+        return instances.some((instance)=>{return instance.client.queue.isQueued})
+    }
+
+    function everyInstancesSocketConnected() : boolean{
+        return instances.every((instance)=>{return instance.client.isSocketConnected})
+    }
+
+    function bootAll(){
+        instances.forEach((instance)=>bootInstance(instance))
+    }
+
+
     return ( 
         <div className="clientStatusIcon">
-            {
-                instance.client.isActive  && instance.client.isSocketConnected ? <div className="icon launched connected"/> :
-                instance.client.isActive ? <div className="icon launched"/> :
-                instance.client.queue.isQueued ? <ClipLoader size={14}/> :
-                <FaPlay className="icon idle" onClick={()=>{bootInstance(instance)}}/>
+            {   
+                someInstancesIdle() ? <FaPlay className="icon idle" onClick={bootAll}/> :
+                someInstancesQueued() ? <ClipLoader size={14}/> :
+                someInstancesActive() && !everyInstancesSocketConnected() ? <div className="icon launched"/> :
+                <div className="icon launched connected"/>
             }
         </div>
      );

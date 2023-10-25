@@ -2,26 +2,17 @@ import React,{useState,useEffect} from 'react'
 import "../styles/checkbox.css"
 
 interface Props {
-    onActiveStateChange:(active:boolean) => void
+    checked:boolean
+    onChange:(checked:boolean)=>any
 }
 
-const CheckBox = ({ onActiveStateChange } : Props) => {
-    let [isActive,setIsActive] = useState<boolean>(false)
-
-    useEffect(()=>{
-        onActiveStateChange(isActive)
-    },[isActive,onActiveStateChange])
-
-    const onClick = () => {
-        setIsActive((wasActive)=>{
-            return !wasActive
-        })
-    }
-
+const CheckBox = ({ checked,onChange } : Props) => {
     return (
         <div 
-            className={`checkbox ${isActive ? "active" : "inactive"}`}
-            onClick={onClick}
+            className={`checkbox ${checked ? "active" : "inactive"}`}
+            onClick={()=>{
+                onChange(!checked)
+            }}
         />
     )
 }
