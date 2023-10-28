@@ -52,7 +52,7 @@ export class BotInstance {
 
         //-- bind standard events. These events are events that are called on every instance, regardless of which events are passed --
         this.events.client.onQueueFront.register(()=>{
-            this.client.start(configuration.devious_jar_path)
+            this.client.start(configuration.devious_jar_path,this.user,configuration.devious_dev_plugin)
         })
     }
 
