@@ -87,7 +87,7 @@ export class BotClient {
         const bat_fp = path.resolve(path.join(temp_folder_fp,user.username.split("@")[0] + ".bat"))
         const commands = [
             `set PLUGIN_DEVELOPMENT_PATH=${plugin_folder_path}`,
-            `java -jar ${devious_client_jar_path} --account=${user.username}:${user.password} --world 543`
+            `java -jar ${devious_client_jar_path} --account=${user.username}:${user.password} --world 543 ${user.proxy ? `--proxy=${user.proxy}` : ""}`
         ]
         
         fs.writeFileSync(bat_fp,commands.join("\n"))
