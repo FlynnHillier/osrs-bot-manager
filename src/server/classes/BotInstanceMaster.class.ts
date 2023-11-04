@@ -58,11 +58,17 @@ export class BotInstanceMaster {
         return newInstances
     }
 
-    private getInstance(username:string) : BotInstance | null {
+    public getInstance(username:string) : BotInstance | null {
         return this.instances.get(username) || null
     }
 
     public getAllInstances() : BotInstance[] {
         return Array.from(this.instances.values())
     }
+
+    public instanceExists(username:string) : boolean {
+        return Array.from(this.instances.keys()).includes(username)
+    }
+
+
 }

@@ -30,7 +30,14 @@ function getSubAction<A extends Action<any,any>>(action:A) : SubAction<A> {
 }
 
 
-type ClientAction = Action<"CLIENT","STARTED" | "CLOSED" | "QUEUED" | "DEQUEUED">
+type ClientAction = Action<"CLIENT",
+    "STARTED" | 
+    "CLOSED" | 
+    "QUEUED" | 
+    "DEQUEUED" |
+    "SOCKETCONNECTED" |
+    "SOCKETDISCONNECTED"
+    >
 
 
 type Actions = Action<"NEW"> | ClientAction
@@ -99,6 +106,12 @@ function clientReducer(client:InstanceState["client"],action:SubAction<ClientAct
         case "DEQUEUED":
             client.queue.isQueued = false
             client.queue.position = -1
+            break;
+        case "SOCKETCONNECTED":
+            client.isSocketConnected = true
+            break;
+        case "SOCKETDISCONNECTED":
+            client.isSocketConnected = false
             break;
         default:
             break;

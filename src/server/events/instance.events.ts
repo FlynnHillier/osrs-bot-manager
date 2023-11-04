@@ -24,6 +24,16 @@ export const instanceEvents : BotInstanceMaster["events"] = {
             (i:BotInstance)=>{
                 clientSocketBundle.emitToAll("CLIENT:DEQUEUED",i.clientState)
             }
-        )
+        ),
+        onSocketConnected:new CallbackCollection(
+            (i:BotInstance)=>{
+                clientSocketBundle.emitToAll("CLIENT:SOCKETCONNECTED",i.clientState)
+            }
+        ),
+        onSocketDisconnected:new CallbackCollection(
+            (i:BotInstance)=>{
+                clientSocketBundle.emitToAll("CLIENT:SOCKETDISCONNECTED",i.clientState)
+            }
+        ),
     }
 }

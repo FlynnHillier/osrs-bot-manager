@@ -11,6 +11,8 @@ export type BotClientEvents = {
     onMove:()=>void
     onDequeue:()=>void
     onQueueFront:()=>void
+    onSocketConnected:()=>void
+    onSocketDisconnected:()=>void
 }
 
 export class BotClient {
@@ -46,6 +48,14 @@ export class BotClient {
         queueFront:()=>{
             this.callbacks.dequeued()
             this.events.onQueueFront()
+        },
+        socketConnected:()=>{
+            this.isSocketConnected = true
+            this.events.onSocketConnected()
+        },
+        socketDisconnected:()=>{
+            this.isSocketConnected = false
+            this.events.onSocketDisconnected()
         }
     }
 
@@ -65,13 +75,14 @@ export class BotClient {
         dev_plugin_path:string
     ) : ChildProcess {
         //starts the client.
-        
+
         const bat = BotClient._writeStartBatchFile(user,deviousClientJarPath,dev_plugin_path)
 
         this.process = exec(bat)
         this.setIsActive(true)
         this.process.on("close",()=>{
             this.setIsActive(false)
+            this.events.onSocketDisconnected()
         })
 
         return this.process

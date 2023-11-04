@@ -60,13 +60,36 @@ const SocketInstanceEvents = ({children}:Props) => {
             })
         }
 
+        function onSocketConnected(instanceState:InstanceState)
+        {
+            dispatchInstances({
+                type:"CLIENT",
+                payload:{
+                    subType:"SOCKETCONNECTED",
+                    instanceState
+                }
+            })
+        }
 
-        
+        function onSocketDisconnected(instanceState:InstanceState)
+        {
+            dispatchInstances({
+                type:"CLIENT",
+                payload:{
+                    subType:"SOCKETDISCONNECTED",
+                    instanceState
+                }
+            })
+        }
+
+
         socket.on("NEW",onNew)
         socket.on("CLIENT:STARTED",onStarted)
         socket.on("CLIENT:QUEUED",onQueued)
         socket.on("CLIENT:CLOSED",onClosed)
         socket.on("CLIENT:DEQUEUED",onDequeued)
+        socket.on("CLIENT:SOCKETDISCONNECTED",onSocketDisconnected)
+        socket.on("CLIENT:SOCKETCONNECTED",onSocketConnected)
 
         return () => {
             socket.off("NEW",onNew)
@@ -74,6 +97,8 @@ const SocketInstanceEvents = ({children}:Props) => {
             socket.off("CLIENT:STARTED",onStarted)
             socket.off("CLIENT:CLOSED",onClosed)
             socket.off("CLIENT:DEQUEUED",onDequeued)
+            socket.off("CLIENT:SOCKETDISCONNECTED",onSocketDisconnected)
+            socket.off("CLIENT:SOCKETCONNECTED",onSocketConnected)
         }
     },[socket])
   

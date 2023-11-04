@@ -28,6 +28,8 @@ export class BotInstance {
             onMove: new CallbackCollection<InstanceEvent>,
             onQueueFront: new CallbackCollection<InstanceEvent>,
             onStart: new CallbackCollection<InstanceEvent>,
+            onSocketConnected: new CallbackCollection<InstanceEvent>,
+            onSocketDisconnected: new CallbackCollection<InstanceEvent>,
         }
     }
 
