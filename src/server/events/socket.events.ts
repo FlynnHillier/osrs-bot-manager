@@ -18,4 +18,15 @@ export const socketHeartbeatEvents : GenericSocketHeartbeatEvents = {
     }
 }
 
-export const socketEvents : SocketEntry["events"] = {}
+export const socketEvents : SocketEntry["events"] = {
+    ["ACTIVITY:JOB-CHANGED"]:(username,jobTitle)=>{        
+        if(!jobTitle) return;
+
+        botInstanceMaster.getInstance(username)?.activity.getCallbacks().jobChanged(jobTitle)
+    },
+    ["ACTIVITY:TASK-CHANGED"]:(username,taskTitle)=>{
+        if(!taskTitle) return;
+
+        botInstanceMaster.getInstance(username)?.activity.getCallbacks().taskChanged(taskTitle)
+    },
+}

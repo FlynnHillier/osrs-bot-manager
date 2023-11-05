@@ -43,7 +43,7 @@ const InstanceFrame = ({instanceState,onSelectionChange,isSelected}:Props) => {
         </div> 
         <div className="task">
           <span className="taskdescription">
-            {"fishing: casting rod"}
+            {`${instanceState.activity.job || "no job"} : ${instanceState.activity.task || "no task"}`}
           </span>
         </div>
       </div>

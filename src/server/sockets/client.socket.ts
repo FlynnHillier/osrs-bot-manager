@@ -20,7 +20,7 @@ export function applyClientSocketRoutes(socketServer:Server) : Namespace {
 
         //populate client with existing instances
         for(let instance of botInstanceMaster.getAllInstances()) {
-            socket.emit("NEW",instance.clientState)
+            socket.emit("NEW",instance.state)
         }
 
         socket.on("disconnect",()=>{

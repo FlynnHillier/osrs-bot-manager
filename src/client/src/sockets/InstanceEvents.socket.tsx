@@ -82,6 +82,31 @@ const SocketInstanceEvents = ({children}:Props) => {
             })
         }
 
+        function onActivityJobChange(instanceState:InstanceState)
+        {
+            dispatchInstances({
+                type:"ACTIVITY",
+                payload:{
+                    subType:"JOB-CHANGED",
+                    instanceState
+                }
+            })
+        }
+
+        function onActivityTaskChange(instanceState:InstanceState)
+        {
+            dispatchInstances({
+                type:"ACTIVITY",
+                payload:{
+                    subType:"TASK-CHANGED",
+                    instanceState
+                }
+            })
+        }
+
+
+
+
 
         socket.on("NEW",onNew)
         socket.on("CLIENT:STARTED",onStarted)
@@ -90,6 +115,9 @@ const SocketInstanceEvents = ({children}:Props) => {
         socket.on("CLIENT:DEQUEUED",onDequeued)
         socket.on("CLIENT:SOCKETDISCONNECTED",onSocketDisconnected)
         socket.on("CLIENT:SOCKETCONNECTED",onSocketConnected)
+        
+        socket.on("ACTIVITY:JOB-CHANGED",onActivityJobChange)
+        socket.on("ACTIVITY:TASK-CHANGED",onActivityTaskChange)
 
         return () => {
             socket.off("NEW",onNew)
@@ -99,6 +127,9 @@ const SocketInstanceEvents = ({children}:Props) => {
             socket.off("CLIENT:DEQUEUED",onDequeued)
             socket.off("CLIENT:SOCKETDISCONNECTED",onSocketDisconnected)
             socket.off("CLIENT:SOCKETCONNECTED",onSocketConnected)
+
+            socket.off("ACTIVITY:JOB-CHANGED",onActivityJobChange)
+            socket.off("ACTIVITY:TASK-CHANGED",onActivityTaskChange)
         }
     },[socket])
   

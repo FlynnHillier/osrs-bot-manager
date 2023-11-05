@@ -13,7 +13,7 @@ export class SocketEntry {
     {
         this.username = username
         this._socket = socket
-        this.events = events
+        this.events = this._wrapEventCallbacks(events)
         if(heartbeat != undefined)
         {
             this.heartbeat = new SocketHeartbeat(socket,heartbeat)
@@ -25,7 +25,7 @@ export class SocketEntry {
     {
         for(let [event,callback] of  Object.entries(this.events))
         {
-            this._socket.on(event,(...args:any[])=>{callback(this.username,...args)})
+            this._socket.on(event,callback)
         }
         
         if(this.heartbeat)
@@ -46,6 +46,20 @@ export class SocketEntry {
             this.heartbeat.stop()
         }
     }
+
+    private _wrapEventCallbacks(events: SocketEntry["events"]) : {[key in keyof SocketEntry["events"]] : ()=>void}
+    {
+        const out : {[key in keyof SocketEntry["events"]] : ()=>void} = {}
+        for(let [event,callback] of Object.entries(events))
+        {
+            out[event] = (...args:any[])=>{
+                callback(this.username,...args)
+            }
+        }
+        return out
+    }
+
+
 
     get socket ()
     {

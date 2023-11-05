@@ -1,6 +1,7 @@
 import { BotInstanceSnapshotModel } from "../models/BotInstanceSnapshot.model"
 import { unwrappedCallbackCollections,InstanceEvent,BotInstanceSnapshot } from "../types/BotInstance.types"
 import { BotClient,BotClientEvents } from "./BotClient.class"
+import { BotActivity,BotActivityEvents } from "./BotActivity.class"
 import { CallbackCollection } from "../util/CallbackCollection.util"
 import { configuration } from "../init/config.init"
 import { Subset } from "@common/types/util.types"
@@ -8,6 +9,7 @@ import { InstanceState } from "@common/types/instanceState.types"
 
 export interface BotInstanceEvents {
     client:unwrappedCallbackCollections<BotClientEvents>
+    activity:unwrappedCallbackCollections<BotActivityEvents>
 }
 
 
@@ -19,6 +21,8 @@ export class BotInstance {
         proxy:string | null
     }
     public client : BotClient
+
+    public activity : BotActivity
     
     public events:BotInstanceEvents = {
         client:{
@@ -30,6 +34,10 @@ export class BotInstance {
             onStart: new CallbackCollection<InstanceEvent>,
             onSocketConnected: new CallbackCollection<InstanceEvent>,
             onSocketDisconnected: new CallbackCollection<InstanceEvent>,
+        },
+        activity:{
+            onJobChange:new CallbackCollection<InstanceEvent>,
+            onTaskChange:new CallbackCollection<InstanceEvent>,
         }
     }
 
@@ -45,11 +53,16 @@ export class BotInstance {
             client:{
                 ...this.events.client,
                 ...(events.client ? events.client : {})
-            } as BotInstance["events"]["client"] //Hacky, potentially fix in future? Not sure why type error is thrown.
+            } as BotInstance["events"]["client"], //Hacky, potentially fix in future? Not sure why type error is thrown.
+            activity:{
+                ...this.events.activity,
+                ...(events.activity? events.activity : {})
+            } as BotInstance["events"]["activity"]
         }
 
         this.user = user
         this.client = new BotClient(this.wrapCallBackCollections(this.events.client))
+        this.activity = new BotActivity(this.wrapCallBackCollections(this.events.activity))
 
 
         //-- bind standard events. These events are events that are called on every instance, regardless of which events are passed --
@@ -99,14 +112,15 @@ export class BotInstance {
     }
 
 
-    get clientState() : InstanceState {
+    get state() : InstanceState {
         //return a client valid state
         return {
             user:{
                 username:this.user.username,
                 proxy:this.user.proxy,
             },
-            client:this.client.state
+            client:this.client.state,
+            activity:this.activity.state,
         }
     }
 }

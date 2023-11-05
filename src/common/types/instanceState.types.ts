@@ -10,5 +10,9 @@ export interface InstanceState {
         }
         isActive:boolean
         isSocketConnected:boolean
+    },
+    activity:{
+        job:string | null,
+        task:string | null,
     }
 }

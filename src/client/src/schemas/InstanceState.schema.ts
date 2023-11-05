@@ -13,5 +13,9 @@ export const instanceStateSchema = Joi.object({
             isQueued:Joi.boolean().required(),
             position:Joi.number().required(),
         })
-    }).required()
+    }).required(),
+    activity:Joi.object({
+        job:Joi.string().required().allow(null),
+        task:Joi.string().required().allow(null),
+    })
 })

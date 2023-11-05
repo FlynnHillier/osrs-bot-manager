@@ -39,8 +39,13 @@ type ClientAction = Action<"CLIENT",
     "SOCKETDISCONNECTED"
     >
 
+type ActivityAction = Action<"ACTIVITY",
+    "JOB-CHANGED" |
+    "TASK-CHANGED"
+>   
 
-type Actions = Action<"NEW"> | ClientAction
+
+type Actions = Action<"NEW"> | ClientAction | ActivityAction
 
 
 function instancesReducer<T extends Actions>(instances:InstanceState[],action:T) : InstanceState[]{    
@@ -81,6 +86,9 @@ function instancesReducer<T extends Actions>(instances:InstanceState[],action:T)
         case "CLIENT":  
             existingInstance.client = clientReducer(existingInstance.client,getSubAction(action as ClientAction))
             break;
+        case "ACTIVITY":
+            existingInstance.activity = activityReducer(existingInstance.activity,getSubAction(action as ActivityAction))
+            break;
         default:
             break;
     }
@@ -119,6 +127,24 @@ function clientReducer(client:InstanceState["client"],action:SubAction<ClientAct
 
     return {...client}
 }
+
+function activityReducer(activity:InstanceState["activity"],action:SubAction<ActivityAction>) : InstanceState["activity"] {
+    const {type,payload} = action
+
+    switch(type){
+        case "JOB-CHANGED":
+            activity.job = action.payload.instanceState.activity.job
+            break;
+        case "TASK-CHANGED":
+            activity.task = action.payload.instanceState.activity.task
+            break;
+        default:
+            break;
+    }
+
+    return {...activity}
+}
+
 
 
 
